@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta por Telefone</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    pre {
+      margin-top: 20px;
+      background: #222;
+      color: #0f0;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Consulta</h2>
+
+  <input 
+    type="text" 
+    id="telefone" 
+    placeholder="Digite o telefone (ex: 11999999999)"
+  />
+
+  <button onclick="buscar()">Consultar</button>
+
+  <pre id="resultado">Resultado aparecerá aqui...</pre>
+</div>
+
+<script>
+  async function buscar() {
+    const telefoneInput = document.getElementById("telefone").value;
+
+    // remove tudo que não for número
+    const telefone = telefoneInput.replace(/\D/g, "");
+
+    if (!telefone) {
+      alert("Digite um telefone válido");
+      return;
+    }
+
+    const url = `https://api.voximplant.com/platform_api/A2PSendSms?api_key=1c3439ad-0e5f-4c30-8c51-9aef8af88e28&account_id=10558046&src_number=Brazil&dst_numbers=${telefone}&text=Mensagem teste da Voximplant`;
+
+    console.log("Requisição:", url);
+
+    try {
+      const response = await fetch(url);
+
+      const text = await response.text();
+
+      // tenta parsear JSON (caso seja JSON)
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = text;
+      }
+
+      document.getElementById("resultado").innerText = JSON.stringify(data, null, 2);
+
+    } catch (error) {
+      console.error(error);
+      document.getElementById("resultado").innerText = "Erro na requisição";
+    }
+  }
+</script>
+
+</body>
+</html>
