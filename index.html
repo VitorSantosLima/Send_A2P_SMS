@@ -145,30 +145,36 @@ async function enviar(tipo) {
     case 'sms':
       nome = document.getElementById('nome_sms').value;
       telefone = formatarTelefone(document.getElementById('tel_sms').value);
+      // 👉 AQUI você define o endpoint de SMS (já funcional via Voximplant)
       endpoint = `https://api.voximplant.com/platform_api/A2PSendSms?dst_numbers=${telefone}&text=Olá ${nome}`;
       break;
 
     case 'call':
       nome = document.getElementById('nome_call').value;
       telefone = formatarTelefone(document.getElementById('tel_call').value);
+      // 👉 AQUI você coloca o endpoint da sua ligação SEM IA
+      // Ex: webhook que inicia uma chamada via Voximplant
       endpoint = `https://SEU-ENDPOINT-CALL?phone=${telefone}&name=${nome}`;
       break;
 
     case 'ai_call':
       nome = document.getElementById('nome_ai_call').value;
       telefone = formatarTelefone(document.getElementById('tel_ai_call').value);
+      // 👉 AQUI você coloca o endpoint da ligação COM IA (agent / bot de voz)
       endpoint = `https://SEU-ENDPOINT-AI-CALL?phone=${telefone}&name=${nome}`;
       break;
 
     case 'wpp_call':
       nome = document.getElementById('nome_wpp_call').value;
       telefone = formatarTelefone(document.getElementById('tel_wpp_call').value);
+      // 👉 AQUI você chama o fluxo: WhatsApp template + fallback ligação
       endpoint = `https://SEU-ENDPOINT-WPP-CALL?phone=${telefone}&name=${nome}`;
       break;
 
     case 'wpp_ai':
       nome = document.getElementById('nome_wpp_ai').value;
       telefone = formatarTelefone(document.getElementById('tel_wpp_ai').value);
+      // 👉 AQUI você chama o fluxo: WhatsApp + IA (ex: bot conversacional)
       endpoint = `https://SEU-ENDPOINT-WPP-AI?phone=${telefone}&name=${nome}`;
       break;
   }
@@ -176,8 +182,13 @@ async function enviar(tipo) {
   const resBox = document.getElementById(`res_${tipo}`);
 
   try {
+    // 👉 ESTE É O FETCH EXECUTADO PARA TODOS OS BOTÕES
+    // Ele usa o endpoint definido acima em cada case
     const response = await fetch(endpoint);
+
+    // 👉 Aqui você pode trocar para response.json() se sua API retornar JSON
     const text = await response.text();
+
     resBox.innerText = text;
   } catch (e) {
     resBox.innerText = 'Erro na requisição';
