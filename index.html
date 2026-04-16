@@ -1,126 +1,188 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Envio mensagem short</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disparos Multicanal</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  padding: 15px;
+}
 
-    .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 350px;
-    }
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-    h2 {
-      margin-bottom: 20px;
-      text-align: center;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background: #1a73e8;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.card h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
 
-    button:hover {
-      background: #155ab6;
-    }
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
 
-    pre {
-      margin-top: 20px;
-      background: #222;
-      color: #0f0;
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 200px;
-      overflow: auto;
-      font-size: 12px;
-    }
-  </style>
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #1a73e8;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #155ab6;
+}
+
+pre {
+  margin-top: 10px;
+  background: #222;
+  color: #0f0;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  max-height: 150px;
+  overflow: auto;
+}
+
+@media(min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
-  <h2>Envio mensagem short</h2>
+<h2>Disparos Multicanal</h2>
 
-  <input 
-    type="text" 
-    id="telefone" 
-    placeholder="Digite o telefone (DDD + número, ex: 11999999999)"
-  />
+<div class="grid">
 
-  <button onclick="enviar()">Enviar</button>
+  <!-- SMS -->
+  <div class="card">
+    <h3>SMS</h3>
+    <input placeholder="Nome" id="nome_sms">
+    <input placeholder="Telefone (DDD + número)" id="tel_sms">
+    <button onclick="enviar('sms')">Enviar</button>
+    <pre id="res_sms"></pre>
+  </div>
 
-  <pre id="resultado">Resposta aparecerá aqui...</pre>
+  <!-- Ligação sem IA -->
+  <div class="card">
+    <h3>Ligação sem IA</h3>
+    <input placeholder="Nome" id="nome_call">
+    <input placeholder="Telefone" id="tel_call">
+    <button onclick="enviar('call')">Disparar</button>
+    <pre id="res_call"></pre>
+  </div>
+
+  <!-- Ligação com IA -->
+  <div class="card">
+    <h3>Ligação com IA</h3>
+    <input placeholder="Nome" id="nome_ai_call">
+    <input placeholder="Telefone" id="tel_ai_call">
+    <button onclick="enviar('ai_call')">Disparar</button>
+    <pre id="res_ai_call"></pre>
+  </div>
+
+  <!-- WhatsApp + ligação -->
+  <div class="card">
+    <h3>WhatsApp + Ligação</h3>
+    <input placeholder="Nome" id="nome_wpp_call">
+    <input placeholder="Telefone" id="tel_wpp_call">
+    <button onclick="enviar('wpp_call')">Disparar</button>
+    <pre id="res_wpp_call"></pre>
+  </div>
+
+  <!-- WhatsApp + IA -->
+  <div class="card">
+    <h3>WhatsApp + IA</h3>
+    <input placeholder="Nome" id="nome_wpp_ai">
+    <input placeholder="Telefone" id="tel_wpp_ai">
+    <button onclick="enviar('wpp_ai')">Disparar</button>
+    <pre id="res_wpp_ai"></pre>
+  </div>
+
 </div>
 
 <script>
-  async function enviar() {
-    const telefoneInput = document.getElementById("telefone").value;
+function formatarTelefone(input) {
+  let tel = input.replace(/\D/g, "");
+  if (!tel.startsWith("55")) tel = "55" + tel;
+  return tel;
+}
 
-    // remove tudo que não for número
-    let telefone = telefoneInput.replace(/\D/g, "");
+async function enviar(tipo) {
+  let nome, telefone, endpoint;
 
-    if (!telefone) {
-      alert("Digite um telefone válido");
-      return;
-    }
+  switch(tipo) {
+    case 'sms':
+      nome = document.getElementById('nome_sms').value;
+      telefone = formatarTelefone(document.getElementById('tel_sms').value);
+      endpoint = `https://api.voximplant.com/platform_api/A2PSendSms?dst_numbers=${telefone}&text=Olá ${nome}`;
+      break;
 
-    // adiciona 55 automaticamente
-    if (!telefone.startsWith("55")) {
-      telefone = "55" + telefone;
-    }
+    case 'call':
+      nome = document.getElementById('nome_call').value;
+      telefone = formatarTelefone(document.getElementById('tel_call').value);
+      endpoint = `https://SEU-ENDPOINT-CALL?phone=${telefone}&name=${nome}`;
+      break;
 
-    const url = `https://api.voximplant.com/platform_api/A2PSendSms?api_key=1c3439ad-0e5f-4c30-8c51-9aef8af88e28&account_id=10558046&src_number=Brazil&dst_numbers=${telefone}&text=Mensagem teste da Voximplant`;
+    case 'ai_call':
+      nome = document.getElementById('nome_ai_call').value;
+      telefone = formatarTelefone(document.getElementById('tel_ai_call').value);
+      endpoint = `https://SEU-ENDPOINT-AI-CALL?phone=${telefone}&name=${nome}`;
+      break;
 
-    console.log("Requisição:", url);
+    case 'wpp_call':
+      nome = document.getElementById('nome_wpp_call').value;
+      telefone = formatarTelefone(document.getElementById('tel_wpp_call').value);
+      endpoint = `https://SEU-ENDPOINT-WPP-CALL?phone=${telefone}&name=${nome}`;
+      break;
 
-    try {
-      const response = await fetch(url);
-      const text = await response.text();
-
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = text;
-      }
-
-      document.getElementById("resultado").innerText =
-        JSON.stringify(data, null, 2);
-
-    } catch (error) {
-      console.error(error);
-      document.getElementById("resultado").innerText =
-        "Erro na requisição";
-    }
+    case 'wpp_ai':
+      nome = document.getElementById('nome_wpp_ai').value;
+      telefone = formatarTelefone(document.getElementById('tel_wpp_ai').value);
+      endpoint = `https://SEU-ENDPOINT-WPP-AI?phone=${telefone}&name=${nome}`;
+      break;
   }
+
+  const resBox = document.getElementById(`res_${tipo}`);
+
+  try {
+    const response = await fetch(endpoint);
+    const text = await response.text();
+    resBox.innerText = text;
+  } catch (e) {
+    resBox.innerText = 'Erro na requisição';
+  }
+}
 </script>
 
 </body>
