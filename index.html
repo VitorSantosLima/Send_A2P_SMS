@@ -148,7 +148,7 @@ async function enviar(tipo) {
       nome = document.getElementById('nome_sms').value;
       telefone = formatarTelefone(document.getElementById('tel_sms').value);
       // 👉 AQUI você define o endpoint de SMS (já funcional via Voximplant)
-      endpoint = `https://api.voximplant.com/platform_api/A2PSendSms?api_key=1c3439ad-0e5f-4c30-8c51-9aef8af88e28&account_id=10558046&src_number=Brazil&dst_numbers=${telefone}&text=Mensagem teste da Voximplant`;
+      endpoint = `https://api.voximplant.com/platform_api/A2PSendSms?api_key=1c3439ad-0e5f-4c30-8c51-9aef8af88e28&account_id=10558046&src_number=Brazil&dst_numbers=${telefone}&text= Olá ${nome}. Essa é uma mensagem teste da Voximplant`;
       break;
 
     case 'call':
